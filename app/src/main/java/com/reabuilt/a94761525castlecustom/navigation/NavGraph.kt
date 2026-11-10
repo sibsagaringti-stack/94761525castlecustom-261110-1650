@@ -2,7 +2,7 @@ package com.reabuilt.a94761525castlecustom.navigation
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.navGraph
+import androidx.navigation.navArgument
 import com.reabuilt.a94761525castlecustom.ui.detail.DetailScreen
 import com.reabuilt.a94761525castlecustom.ui.downloads.DownloadsScreen
 import com.reabuilt.a94761525castlecustom.ui.find.FindScreen
@@ -18,7 +18,7 @@ const val ROUTE_SPLASH = "splash"
 const val ROUTE_ONBOARDING = "onboarding"
 const val ROUTE_HOME = "home"
 const val ROUTE_FIND = "find"
-const val ROUTE_SEARCH = "search"
+const val ROUTE_SEARCH = "search/{query?}"
 const val ROUTE_LIVE_TV = "live_tv"
 const val ROUTE_DOWNLOADS = "downloads"
 const val ROUTE_PROFILE = "profile"
@@ -37,52 +37,58 @@ fun NavGraphBuilder.appNavGraph(
         OnboardingScreen(onComplete = onNavigateToHome)
     }
 
-    navGraph(startDestination = ROUTE_HOME) {
-        composable(ROUTE_HOME) {
-            HomeScreen()
-        }
-        composable(ROUTE_FIND) {
-            FindScreen()
-        }
-        composable(ROUTE_SEARCH) {
-            SearchScreen()
-        }
-        composable(ROUTE_LIVE_TV) {
-            LiveTvScreen()
-        }
-        composable(ROUTE_DOWNLOADS) {
-            DownloadsScreen()
-        }
-        composable(ROUTE_PROFILE) {
-            ProfileScreen()
-        }
+    composable(ROUTE_HOME) {
+        HomeScreen()
+    }
+    
+    composable(ROUTE_FIND) {
+        FindScreen()
+    }
+    
+    composable(
+        route = ROUTE_SEARCH,
+        arguments = listOf(navArgument("query") { defaultValue = "" })
+    ) {
+        SearchScreen()
+    }
+    
+    composable(ROUTE_LIVE_TV) {
+        LiveTvScreen()
+    }
+    
+    composable(ROUTE_DOWNLOADS) {
+        DownloadsScreen()
+    }
+    
+    composable(ROUTE_PROFILE) {
+        ProfileScreen()
     }
 
     composable(
         route = ROUTE_DETAIL,
-        arguments = listOf(androidx.navigation.navArgument("contentId") { type = androidx.navigation.NavType.StringType })
+        arguments = listOf(navArgument("contentId") { type = androidx.navigation.NavType.StringType })
     ) { backStackEntry ->
-        val contentId = backStackEntry.getString()!!
+        val contentId = backStackEntry.arguments?.getString("contentId") ?: ""
         DetailScreen(contentId = contentId)
     }
 
     composable(
         route = ROUTE_PLAYER,
         arguments = listOf(
-            androidx.navigation.navArgument("contentId") { type = androidx.navigation.NavType.StringType },
-            androidx.navigation.navArgument("episodeId") { type = androidx.navigation.NavType.StringType; defaultValue = "" }
+            navArgument("contentId") { type = androidx.navigation.NavType.StringType },
+            navArgument("episodeId") { type = androidx.navigation.NavType.StringType; defaultValue = "" }
         )
     ) { backStackEntry ->
-        val contentId = backStackEntry.getString()!!
-        val episodeId = backStackEntry.getString()
-        PlayerScreen(contentId = contentId, episodeId = episodeId?.takeIf { it.isNotBlank() })
+        val contentId = backStackEntry.arguments?.getString("contentId") ?: ""
+        val episodeId = backStackEntry.arguments?.getString("episodeId")?.takeIf { it.isNotBlank() }
+        PlayerScreen(contentId = contentId, episodeId = episodeId)
     }
 
     composable(
         route = ROUTE_CHANNEL_PLAYER,
-        arguments = listOf(androidx.navigation.navArgument("channelId") { type = androidx.navigation.NavType.StringType })
+        arguments = listOf(navArgument("channelId") { type = androidx.navigation.NavType.StringType })
     ) { backStackEntry ->
-        val channelId = backStackEntry.getString()!!
+        val channelId = backStackEntry.arguments?.getString("channelId") ?: ""
         PlayerScreen(contentId = channelId, isLiveChannel = true)
     }
 }

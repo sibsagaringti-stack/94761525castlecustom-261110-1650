@@ -25,7 +25,7 @@ class MainActivity : ComponentActivity() {
         
         setContent {
             val application = applicationContext as CastleApplication
-            val viewModel: MainViewModel = viewModel(factory = MainViewModelFactory(application))
+            val viewModel: MainViewModel = viewModel(factory = CastleViewModelFactory(application))
             
             val preferences by viewModel.preferences.collectAsState()
             

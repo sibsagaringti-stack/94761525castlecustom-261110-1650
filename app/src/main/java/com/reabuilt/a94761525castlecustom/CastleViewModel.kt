@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.reabuilt.a94761525castlecustom.data.model.UserPreferences
 import com.reabuilt.a94761525castlecustom.data.repository.ContentRepository
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 class CastleViewModel(
     private val application: CastleApplication
