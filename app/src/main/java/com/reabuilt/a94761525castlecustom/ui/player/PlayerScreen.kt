@@ -141,7 +141,8 @@ fun PlayerScreen(
         }
         playerError = false
         val mediaItem = MediaItem.Builder().setUri(streamUrl).build()
-        exoPlayer.setMediaSource(DefaultMediaSourceFactory().createMediaSource(mediaItem))
+        val mediaSourceFactory = DefaultMediaSourceFactory(context)
+        exoPlayer.setMediaSource(mediaSourceFactory.createMediaSource(mediaItem))
         exoPlayer.playWhenReady = true
         exoPlayer.prepare()
     }
@@ -150,7 +151,7 @@ fun PlayerScreen(
         AndroidView(
             factory = { viewContext ->
                 PlayerView(viewContext).apply {
-                    player = exoPlayer
+                    setPlayer(exoPlayer)
                     useController = true
                     setShutterBackgroundColor(android.graphics.Color.BLACK)
                 }

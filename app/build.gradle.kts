@@ -63,4 +63,5 @@ implementation("androidx.media3:media3-session:1.5.1")
 implementation("io.coil-kt:coil-compose:2.7.0")
 implementation("androidx.media3:media3-exoplayer-hls:1.5.1")
 implementation("androidx.media3:media3-ui:1.5.1")
+implementation("androidx.navigation:navigation-compose:2.9.0")
         }

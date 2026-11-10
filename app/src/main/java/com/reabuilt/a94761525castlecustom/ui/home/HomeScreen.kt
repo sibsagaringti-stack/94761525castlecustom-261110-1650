@@ -38,6 +38,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.findNavController
 import coil.compose.AsyncImage
 import com.reabuilt.a94761525castlecustom.data.model.Content
@@ -47,9 +48,10 @@ import com.reabuilt.a94761525castlecustom.ui.components.ContentRowShimmer
 import com.reabuilt.a94761525castlecustom.viewmodel.rememberMainViewModel
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(
+    navController: NavHostController = findNavController()
+) {
     val viewModel = rememberMainViewModel()
-    val navController = findNavController()
 
     val trending by viewModel.trendingContent.collectAsState()
     val continueWatching by viewModel.continueWatching.collectAsState()

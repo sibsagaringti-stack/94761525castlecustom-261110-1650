@@ -39,6 +39,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.findNavController
 import coil.compose.AsyncImage
 import com.reabuilt.a94761525castlecustom.data.model.LiveChannel
@@ -47,9 +48,10 @@ import com.reabuilt.a94761525castlecustom.ui.components.CategoryChip
 import com.reabuilt.a94761525castlecustom.viewmodel.rememberMainViewModel
 
 @Composable
-fun LiveTvScreen() {
+fun LiveTvScreen(
+    navController: NavHostController = findNavController()
+) {
     val viewModel = rememberMainViewModel()
-    val navController = findNavController()
     val channels by viewModel.liveChannels.collectAsState()
     var selectedCategory by remember { mutableStateOf<LiveTvCategory?>(null) }
 
