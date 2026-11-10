@@ -14,21 +14,23 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.reabuilt.a94761525castlecustom.ui.screens.CastleApp
 import com.reabuilt.a94761525castlecustom.ui.theme.CastleTheme
 import com.reabuilt.a94761525castlecustom.viewmodel.MainViewModel
+import com.reabuilt.a94761525castlecustom.viewmodel.MainViewModelFactory
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        val app = application as CastleApplication
         setContent {
-            val viewModel: MainViewModel = viewModel { MainViewModel(application as CastleApplication) }
+            val viewModel: MainViewModel = viewModel(factory = MainViewModelFactory(app))
             val preferences by viewModel.preferences.collectAsState()
-            
+
             CastleTheme(preferences = preferences) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    CastleApp(application = application as CastleApplication)
+                    CastleApp(viewModel = viewModel)
                 }
             }
         }

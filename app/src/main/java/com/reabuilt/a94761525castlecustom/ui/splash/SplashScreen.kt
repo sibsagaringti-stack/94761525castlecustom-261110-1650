@@ -1,68 +1,79 @@
 package com.reabuilt.a94761525castlecustom.ui.splash
 
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Castle
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.reabuilt.a94761525castlecustom.ui.onboarding.OnboardingState
 import kotlinx.coroutines.delay
 
 @Composable
 fun SplashScreen(
-    onNavigateToHome: () -> Unit
+    onNavigateToHome: () -> Unit,
+    onNavigateToOnboarding: () -> Unit
 ) {
-    val scale = remember { Animatable(0f) }
-    
-    LaunchedEffect(key1 = true) {
-        scale.animateTo(
-            targetValue = 1f,
-            animationSpec = tween(800)
-        )
-        delay(1500)
-        onNavigateToHome()
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        delay(1800)
+        if (OnboardingState.hasOnboarded(context)) {
+            onNavigateToHome()
+        } else {
+            onNavigateToOnboarding()
+        }
     }
-    
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.primary),
         contentAlignment = Alignment.Center
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = "🏰",
-                fontSize = 80.sp,
-                modifier = Modifier.scale(scale.value)
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Icon(
+                imageVector = Icons.Default.Castle,
+                contentDescription = null,
+                modifier = Modifier.size(96.dp),
+                tint = MaterialTheme.colorScheme.onPrimary
             )
+            Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "Castle Custom",
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Bold,
+                text = "Castle",
+                style = MaterialTheme.typography.displayMedium,
                 color = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier.scale(scale.value)
+                fontWeight = FontWeight.Bold
             )
             Text(
-                text = "Your Entertainment Destination",
-                fontSize = 16.sp,
-                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f),
-                modifier = Modifier.scale(scale.value)
+                text = "Custom",
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.85f)
+            )
+            Spacer(modifier = Modifier.height(28.dp))
+            CircularProgressIndicator(
+                modifier = Modifier.size(28.dp),
+                color = MaterialTheme.colorScheme.onPrimary
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = "100% Free • No Ads • No Subscriptions",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
             )
         }
     }

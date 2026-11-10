@@ -1,10 +1,9 @@
 package com.reabuilt.a94761525castlecustom.ui.livetv
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,22 +12,18 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
+import androidx.compose.material.icons.filled.LiveTv
+import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -38,167 +33,148 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.LocalNavController
 import coil.compose.AsyncImage
-import coil.request.ImageRequest
-import com.reabuilt.a94761525castlecustom.data.model.LiveChannel
 import com.reabuilt.a94761525castlecustom.data.model.LiveTvCategory
-import com.reabuilt.a94761525castlecustom.viewmodel.MainViewModel
+import com.reabuilt.a94761525castlecustom.ui.components.CategoryChip
+import com.reabuilt.a94761525castlecustom.viewmodel.localMainViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LiveTvScreen(
-    viewModel: MainViewModel = viewModel()
-) {
-    val liveChannels by viewModel.liveChannels.collectAsState()
+fun LiveTvScreen() {
+    val navController = LocalNavController.current
+    val viewModel = localMainViewModel()
+    val channels by viewModel.liveChannels.collectAsState()
+
     var selectedCategory by remember { mutableStateOf<LiveTvCategory?>(null) }
-    
-    val categories = LiveTvCategory.values().toList()
-    val filteredChannels = if (selectedCategory == null) {
-        liveChannels
-    } else {
-        liveChannels.filter { it.category == selectedCategory }
+
+    val categories = remember {
+        listOf<LiveTvCategory?>(
+            null,
+            LiveTvCategory.NEWS,
+            LiveTvCategory.SPORTS,
+            LiveTvCategory.MOVIES,
+            LiveTvCategory.MUSIC,
+            LiveTvCategory.KIDS
+        )
     }
-    
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Live TV", fontWeight = FontWeight.Bold) },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
-                )
+    val filtered = remember(channels, selectedCategory) {
+        channels.filter { channel -> selectedCategory == null || channel.category == selectedCategory }
+    }
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Default.LiveTv,
+                contentDescription = null,
+                modifier = Modifier.size(26.dp),
+                tint = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = "Live TV",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
-    ) { paddingValues ->
-        Column(
+
+        Row(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState())
+                .padding(bottom = 8.dp)
         ) {
-            // Category Filter
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                item {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        FilterChip(
-                            selected = selectedCategory == null,
-                            onClick = { selectedCategory = null },
-                            label = { Text("All") }
-                        )
-                        categories.take(5).forEach { category ->
-                            FilterChip(
-                                selected = selectedCategory == category,
-                                onClick = { selectedCategory = category },
-                                label = { Text(category.displayName) }
+            categories.forEach { category ->
+                CategoryChip(
+                    label = category?.displayName ?: "All",
+                    isSelected = category == selectedCategory,
+                    onClick = { selectedCategory = category }
+                )
+            }
+        }
+
+        LazyColumn(modifier = Modifier.fillMaxSize()) {
+            items(filtered) { channel ->
+                Surface(
+                    onClick = { navController.navigate("channel_player/${channel.id}") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 6.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
+                ) {
+                    Row(modifier = Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Box(
+                            modifier = Modifier
+                                .size(52.dp)
+                                .clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.surface)
+                        ) {
+                            AsyncImage(
+                                model = channel.logoUrl,
+                                contentDescription = channel.name,
+                                contentScale = ContentScale.Fit,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .clip(CircleShape)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    text = channel.name,
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontWeight = FontWeight.Medium,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    maxLines = 1
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(
+                                    text = "CH ${channel.channelNumber}",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    imageVector = Icons.Default.PlayCircle,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(14.dp),
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = channel.currentProgram ?: "On air",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    maxLines = 1
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Surface(color = Color.Red, shape = RoundedCornerShape(4.dp)) {
+                            Text(
+                                text = "LIVE",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = Color.White,
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
                             )
                         }
                     }
                 }
-                
-                items(filteredChannels) { channel ->
-                    LiveChannelCard(
-                        channel = channel,
-                        onClick = { }
-                    )
-                }
             }
-        }
-    }
-}
-
-@Composable
-fun LiveChannelCard(
-    channel: LiveChannel,
-    onClick: () -> Unit
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(80.dp),
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        onClick = onClick
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Channel Logo
-            Box(
-                modifier = Modifier
-                    .size(56.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.surfaceVariant),
-                contentAlignment = Alignment.Center
-            ) {
-                AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(channel.logoUrl)
-                        .crossfade(true)
-                        .build(),
-                    contentDescription = channel.name,
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape)
-                )
-            }
-            
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 16.dp)
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "${channel.channelNumber}. ",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp
-                    )
-                    Text(
-                        text = channel.name,
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 16.sp
-                    )
-                }
-                
-                if (channel.currentProgram != null) {
-                    Text(
-                        text = channel.currentProgram,
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1
-                    )
-                }
-            }
-            
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primary),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Default.PlayArrow,
-                    contentDescription = "Play",
-                    tint = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier.size(20.dp)
-                )
-            }
+            item { Spacer(modifier = Modifier.height(16.dp)) }
         }
     }
 }

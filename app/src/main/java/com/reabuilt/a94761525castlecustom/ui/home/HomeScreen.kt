@@ -1,9 +1,10 @@
 package com.reabuilt.a94761525castlecustom.ui.home
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,247 +14,263 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Castle
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Download
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.LiveTv
-import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.LocalNavController
 import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.reabuilt.a94761525castlecustom.data.model.Content
-import com.reabuilt.a94761525castlecustom.data.model.FeaturedCollection
-import com.reabuilt.a94761525castlecustom.ui.components.ContentCard
-import com.reabuilt.a94761525castlecustom.viewmodel.MainViewModel
+import com.reabuilt.a94761525castlecustom.ui.components.ContentRow
+import com.reabuilt.a94761525castlecustom.viewmodel.localMainViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(
-    viewModel: MainViewModel = viewModel()
-) {
-    val trendingContent by viewModel.trendingContent.collectAsState()
+fun HomeScreen() {
+    val viewModel = localMainViewModel()
+    val navController = LocalNavController.current
+
+    val trending by viewModel.trendingContent.collectAsState()
     val continueWatching by viewModel.continueWatching.collectAsState()
-    val featuredCollections by viewModel.featuredCollections.collectAsState()
+    val recommended by viewModel.recommendedContent.collectAsState()
+    val collections by viewModel.featuredCollections.collectAsState()
+    val watchHistory by viewModel.watchHistory.collectAsState()
     val watchlist by viewModel.watchlist.collectAsState()
-    
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { 
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("🏰 ", fontSize = 24.sp)
-                        Text(
-                            text = "Castle",
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                ),
-                actions = {
-                    IconButton(onClick = { }) {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = "Search"
-                        )
-                    }
-                }
-            )
-        },
-        bottomBar = {
-            BottomAppBar(
-                containerColor = MaterialTheme.colorScheme.primaryContainer
+
+    val progressMap = remember(watchHistory) {
+        watchHistory.associate { item -> item.contentId to item.progress / 100f }
+    }
+    val watchlistMap = remember(watchlist) { watchlist.associateWith { true } }
+    val featured = remember(trending) { trending.filter { it.isFeatured } }
+
+    val onContentClick: (Content) -> Unit = { content ->
+        navController.navigate("detail/${content.id}")
+    }
+    val onWatchlistToggle: (Content) -> Unit = { content ->
+        viewModel.toggleWatchlist(content.id)
+    }
+
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
+        item {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(onClick = { }) {
-                    Icon(
-                        imageVector = Icons.Default.Home,
-                        contentDescription = "Home",
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
-                IconButton(onClick = { }) {
+                Icon(
+                    imageVector = Icons.Default.Castle,
+                    contentDescription = null,
+                    modifier = Modifier.size(34.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Castle",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                IconButton(onClick = { navController.navigate("search") }) {
                     Icon(
                         imageVector = Icons.Default.Search,
-                        contentDescription = "Search"
-                    )
-                }
-                IconButton(onClick = { }) {
-                    Icon(
-                        imageVector = Icons.Default.LiveTv,
-                        contentDescription = "Live TV"
-                    )
-                }
-                IconButton(onClick = { }) {
-                    Icon(
-                        imageVector = Icons.Default.Download,
-                        contentDescription = "Downloads"
-                    )
-                }
-                IconButton(onClick = { }) {
-                    Icon(
-                        imageVector = Icons.Default.Person,
-                        contentDescription = "Profile"
+                        contentDescription = "Search",
+                        tint = MaterialTheme.colorScheme.onSurface
                     )
                 }
             }
         }
-    ) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            contentPadding = PaddingValues(bottom = 16.dp)
-        ) {
-            // Featured Banner
-            if (trendingContent.isNotEmpty()) {
-                item {
-                    FeaturedBanner(content = trendingContent.first())
-                }
-            }
-            
-            // Continue Watching
-            if (continueWatching.isNotEmpty()) {
-                item {
-                    SectionHeader(title = "Continue Watching")
-                }
-                item {
-                    LazyRow(
-                        contentPadding = PaddingValues(horizontal = 16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        items(continueWatching.take(5)) { content ->
-                            ContentCard(
-                                content = content,
-                                onClick = { },
-                                onToggleWatchlist = { viewModel.toggleWatchlist(content.id) },
-                                isWatchlisted = content.id in watchlist,
-                                showWatchProgress = true,
-                                watchProgress = (30..80).random()
-                            )
-                        }
-                    }
-                }
-            }
-            
-            // Trending Now
+
+        if (featured.isNotEmpty()) {
             item {
-                SectionHeader(title = "Trending Now")
-            }
-            item {
-                LazyRow(
-                    contentPadding = PaddingValues(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    items(trendingContent) { content ->
-                        ContentCard(
-                            content = content,
-                            onClick = { },
-                            onToggleWatchlist = { viewModel.toggleWatchlist(content.id) },
-                            isWatchlisted = content.id in watchlist
-                        )
-                    }
-                }
-            }
-            
-            // Featured Collections
-            items(featuredCollections.filterIsInstance<FeaturedCollection>()) { collection ->
-                SectionHeader(title = collection.title)
-                LazyRow(
-                    contentPadding = PaddingValues(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    items(collection.content.take(5)) { content ->
-                        ContentCard(
-                            content = content,
-                            onClick = { },
-                            onToggleWatchlist = { viewModel.toggleWatchlist(content.id) },
-                            isWatchlisted = content.id in watchlist
-                        )
-                    }
-                }
+                FeaturedCarousel(
+                    items = featured,
+                    onPlay = { content -> navController.navigate("player/${content.id}") },
+                    onInfo = onContentClick
+                )
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }
-    }
-}
 
-@Composable
-fun FeaturedBanner(content: Content) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(250.dp)
-    ) {
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(content.backdropUrl ?: content.posterUrl)
-                .crossfade(true)
-                .build(),
-            contentDescription = content.title,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
-        )
-        
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .clip(RoundedCornerShape(bottomEnd = 16.dp, bottomStart = 16.dp))
-        ) {
-            Column(
-                modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .padding(16.dp)
-            ) {
-                Text(
-                    text = content.title,
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
+        item {
+            ContentRow(
+                title = "Trending Now",
+                contentList = trending,
+                onContentClick = onContentClick,
+                watchlistMap = watchlistMap,
+                onWatchlistToggle = onWatchlistToggle
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+
+        item {
+            ContentRow(
+                title = "Continue Watching",
+                contentList = continueWatching,
+                onContentClick = onContentClick,
+                showProgress = true,
+                progressMap = progressMap,
+                watchlistMap = watchlistMap,
+                onWatchlistToggle = onWatchlistToggle
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+
+        collections.forEach { collection ->
+            item(key = collection.id) {
+                ContentRow(
+                    title = collection.title,
+                    contentList = collection.content,
+                    onContentClick = onContentClick,
+                    watchlistMap = watchlistMap,
+                    onWatchlistToggle = onWatchlistToggle
                 )
-                Text(
-                    text = content.description,
-                    fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f),
-                    maxLines = 2,
-                    modifier = Modifier.padding(top = 8.dp)
-                )
+                Spacer(modifier = Modifier.height(8.dp))
             }
+        }
+
+        item {
+            ContentRow(
+                title = "Recommended For You",
+                contentList = recommended,
+                onContentClick = onContentClick,
+                watchlistMap = watchlistMap,
+                onWatchlistToggle = onWatchlistToggle
+            )
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun SectionHeader(title: String) {
-    Text(
-        text = title,
-        fontSize = 20.sp,
-        fontWeight = FontWeight.Bold,
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
-    )
+private fun FeaturedCarousel(
+    items: List<Content>,
+    onPlay: (Content) -> Unit,
+    onInfo: (Content) -> Unit
+) {
+    val pagerState = rememberPagerState { items.size }
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(280.dp)
+            .padding(horizontal = 16.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { index ->
+            val content = items.getOrNull(index) ?: items.firstOrNull() ?: return@HorizontalPager
+            Box(modifier = Modifier.fillMaxSize()) {
+                AsyncImage(
+                    model = content.backdropUrl ?: content.posterUrl,
+                    contentDescription = content.title,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(RoundedCornerShape(16.dp))
+                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(
+                            Brush.verticalGradient(
+                                listOf(Color.Transparent, Color.Black.copy(alpha = 0.85f))
+                            )
+                        )
+                )
+                Column(modifier = Modifier.align(Alignment.BottomStart).padding(16.dp)) {
+                    Surface(
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.9f),
+                        shape = RoundedCornerShape(4.dp)
+                    ) {
+                        Text(
+                            text = content.quality.displayName,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = content.title,
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = Color.White,
+                        maxLines = 2
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = content.description,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.White.copy(alpha = 0.8f),
+                        maxLines = 2
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Button(onClick = { onPlay(content) }) {
+                            Icon(
+                                imageVector = Icons.Default.PlayArrow,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text("Play")
+                        }
+                        OutlinedButton(onClick = { onInfo(content) }) {
+                            Icon(
+                                imageVector = Icons.Default.Info,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp),
+                                tint = Color.White
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text("Info", color = Color.White)
+                        }
+                    }
+                }
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 10.dp)
+                ) {
+                    items.forEachIndexed { i, _ ->
+                        Box(
+                            modifier = Modifier
+                                .size(6.dp)
+                                .clip(CircleShape)
+                                .background(
+                                    if (i == pagerState.currentPage) Color.White
+                                    else Color.White.copy(alpha = 0.4f)
+                                )
+                        )
+                        if (i < items.lastIndex) Spacer(modifier = Modifier.width(6.dp))
+                    }
+                }
+            }
+        }
+    }
 }

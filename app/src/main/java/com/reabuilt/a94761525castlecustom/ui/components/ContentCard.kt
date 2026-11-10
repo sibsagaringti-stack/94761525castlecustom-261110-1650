@@ -9,9 +9,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.filled.BookmarkBorder
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -25,23 +29,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.reabuilt.a94761525castlecustom.data.model.Content
-import com.reabuilt.a94761525castlecustom.data.model.VideoQuality
-
-// Fixed imports
-import androidx.compose.material3.icons.Icons
-import androidx.compose.material3.icons.filled.Bookmark
-import androidx.compose.material3.icons.filled.BookmarkBorder
-import androidx.compose.material3.icons.filled.PlayArrow
-import androidx.compose.material3.icons.filled.Star
 
 enum class ContentCardSize {
     SMALL, MEDIUM, LARGE, XLARGE
@@ -59,7 +53,7 @@ fun ContentCard(
     modifier: Modifier = Modifier
 ) {
     var isWatchlistedState by remember { mutableStateOf(isWatchlisted) }
-    
+
     val cardWidth = when (size) {
         ContentCardSize.SMALL -> 112.dp
         ContentCardSize.MEDIUM -> 140.dp
@@ -72,7 +66,7 @@ fun ContentCard(
         ContentCardSize.LARGE -> 260.dp
         ContentCardSize.XLARGE -> 300.dp
     }
-    
+
     Card(
         modifier = modifier
             .width(cardWidth)
@@ -97,7 +91,7 @@ fun ContentCard(
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.fillMaxWidth()
                     )
-                    
+
                     Surface(
                         modifier = Modifier
                             .align(Alignment.TopEnd)
@@ -112,9 +106,9 @@ fun ContentCard(
                             modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
                         )
                     }
-                    
+
                     IconButton(
-                        onClick = { 
+                        onClick = {
                             isWatchlistedState = !isWatchlistedState
                             onToggleWatchlist()
                         },
@@ -129,7 +123,7 @@ fun ContentCard(
                         )
                     }
                 }
-                
+
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -142,7 +136,7 @@ fun ContentCard(
                         maxLines = 1,
                         modifier = Modifier.fillMaxWidth()
                     )
-                    
+
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -166,7 +160,7 @@ fun ContentCard(
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
-                    
+
                     if (showWatchProgress && watchProgress > 0) {
                         LinearProgressIndicator(
                             progress = watchProgress / 100f,
@@ -211,7 +205,7 @@ fun ContentCardWide(
                         .width(70.dp)
                         .height(100.dp)
                 )
-                
+
                 Column(
                     modifier = Modifier
                         .weight(1f)
@@ -223,7 +217,7 @@ fun ContentCardWide(
                         fontWeight = FontWeight.Medium,
                         maxLines = 2
                     )
-                    
+
                     Text(
                         text = content.description,
                         style = MaterialTheme.typography.bodySmall,
@@ -231,7 +225,7 @@ fun ContentCardWide(
                         maxLines = 2,
                         modifier = Modifier.padding(top = 4.dp)
                     )
-                    
+
                     Row(
                         modifier = Modifier.padding(top = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
@@ -253,7 +247,7 @@ fun ContentCardWide(
                         )
                     }
                 }
-                
+
                 IconButton(
                     onClick = onClick,
                     modifier = Modifier

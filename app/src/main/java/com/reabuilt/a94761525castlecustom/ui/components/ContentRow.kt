@@ -2,6 +2,7 @@ package com.reabuilt.a94761525castlecustom.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -62,7 +63,7 @@ fun ContentRow(
         LazyRow(
             modifier = Modifier.padding(horizontal = 12.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
-            contentPadding = androidx.compose.foundation.layout.PaddingValues(0.dp)
+            contentPadding = PaddingValues(0.dp)
         ) {
             items(contentList) { content ->
                 ContentCard(
@@ -72,7 +73,7 @@ fun ContentRow(
                     showWatchProgress = showProgress && progressMap.containsKey(content.id),
                     watchProgress = (progressMap[content.id]?.times(100)?.toInt()) ?: 0,
                     isWatchlisted = watchlistMap[content.id] ?: false,
-                    onToggleWatchlist = onWatchlistToggle?.let { { it(content) } }
+                    onToggleWatchlist = { onWatchlistToggle?.invoke(content) }
                 )
             }
         }
