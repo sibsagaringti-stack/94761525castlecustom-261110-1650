@@ -6,21 +6,27 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Castle
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.reabuilt.a94761525castlecustom.ui.onboarding.OnboardingState
+import androidx.compose.ui.unit.sp
+import com.reabuilt.a94761525castlecustom.viewmodel.rememberMainViewModel
 import kotlinx.coroutines.delay
 
 @Composable
@@ -28,52 +34,66 @@ fun SplashScreen(
     onNavigateToHome: () -> Unit,
     onNavigateToOnboarding: () -> Unit
 ) {
-    val context = LocalContext.current
+    val viewModel = rememberMainViewModel()
+    val onboardingCompleted by viewModel.onboardingCompleted.collectAsState()
 
     LaunchedEffect(Unit) {
-        delay(1800)
-        if (OnboardingState.hasOnboarded(context)) {
-            onNavigateToHome()
-        } else {
-            onNavigateToOnboarding()
-        }
+        delay(2400L)
+        if (onboardingCompleted) onNavigateToHome() else onNavigateToOnboarding()
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.primary),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Icon(
-                imageVector = Icons.Default.Castle,
-                contentDescription = null,
-                modifier = Modifier.size(96.dp),
-                tint = MaterialTheme.colorScheme.onPrimary
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = "Castle",
-                style = MaterialTheme.typography.displayMedium,
-                color = MaterialTheme.colorScheme.onPrimary,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                text = "Custom",
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.85f)
-            )
+    Box(modifier = Modifier.fillMaxSize()) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(Color(0xFF1E1B4B), Color(0xFF4C1D95), Color(0xFF6D28D9))
+                    )
+                )
+        )
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Surface(
+                shape = CircleShape,
+                color = Color.White.copy(alpha = 0.12f),
+                modifier = Modifier.size(128.dp)
+            ) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Icon(
+                        imageVector = Icons.Filled.Castle,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(68.dp)
+                    )
+                }
+            }
+
             Spacer(modifier = Modifier.height(28.dp))
-            CircularProgressIndicator(
-                modifier = Modifier.size(28.dp),
-                color = MaterialTheme.colorScheme.onPrimary
-            )
-            Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "100% Free • No Ads • No Subscriptions",
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
+                text = "Castle Custom",
+                fontSize = 30.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            )
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(
+                text = "94761525 · Ad-free streaming",
+                fontSize = 13.sp,
+                color = Color.White.copy(alpha = 0.85f)
+            )
+            Spacer(modifier = Modifier.height(36.dp))
+            CircularProgressIndicator(
+                color = Color.White.copy(alpha = 0.9f),
+                trackColor = Color.White.copy(alpha = 0.2f),
+                strokeWidth = 2.dp,
+                modifier = Modifier.size(24.dp)
             )
         }
     }

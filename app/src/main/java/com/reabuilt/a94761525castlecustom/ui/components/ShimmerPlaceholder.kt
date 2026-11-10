@@ -1,6 +1,6 @@
 package com.reabuilt.a94761525castlecustom.ui.components
 
-import androidx.compose.animation.core.InfiniteTransition
+import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
@@ -51,8 +51,8 @@ fun ContentCardShimmer(
         initialValue = 0.4f,
         targetValue = 1f,
         animationSpec = infiniteRepeatable(
-            animationSpec = tween(1000, delayMillis = 0),
-            repeatMode = androidx.compose.animation.core.RepeatMode.Reverse
+            animation = tween(1000, delayMillis = 0),
+            repeatMode = RepeatMode.Reverse
         )
     )
 
@@ -117,8 +117,8 @@ fun ContentRowShimmer(
         initialValue = 0.4f,
         targetValue = 1f,
         animationSpec = infiniteRepeatable(
-            animationSpec = tween(1000, delayMillis = 0),
-            repeatMode = androidx.compose.animation.core.RepeatMode.Reverse
+            animation = tween(1000, delayMillis = 0),
+            repeatMode = RepeatMode.Reverse
         )
     )
     val shimmerBrush = Brush.linearGradient(

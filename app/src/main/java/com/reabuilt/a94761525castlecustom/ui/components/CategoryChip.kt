@@ -1,6 +1,5 @@
 package com.reabuilt.a94761525castlecustom.ui.components
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -28,30 +27,26 @@ fun CategoryChip(
         modifier = modifier.padding(end = 8.dp),
         onClick = onClick,
         selected = isSelected,
-        leadingIcon = icon?.let {
+        leadingIcon = if (icon != null) {
             {
                 Icon(
-                    imageVector = it,
+                    imageVector = icon,
                     contentDescription = null,
                     modifier = Modifier.size(18.dp)
                 )
             }
+        } else {
+            null
         },
         label = {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
-                Text(
-                    text = label,
-                    fontSize = 13.sp
-                )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = label, fontSize = 13.sp)
             }
         },
         colors = FilterChipDefaults.filterChipColors(
             selectedContainerColor = MaterialTheme.colorScheme.primary,
             selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
-            selectedLeadingIconColor = MaterialTheme.colorScheme.onPrimary,
+            selectedIconColor = MaterialTheme.colorScheme.onPrimary,
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
             labelColor = MaterialTheme.colorScheme.onSurfaceVariant,
             iconColor = MaterialTheme.colorScheme.onSurfaceVariant
@@ -71,10 +66,7 @@ fun FilterChipComponent(
         onClick = onClick,
         selected = isSelected,
         label = {
-            Text(
-                text = label,
-                fontSize = 13.sp
-            )
+            Text(text = label, fontSize = 13.sp)
         },
         colors = FilterChipDefaults.filterChipColors(
             selectedContainerColor = MaterialTheme.colorScheme.tertiaryContainer,
