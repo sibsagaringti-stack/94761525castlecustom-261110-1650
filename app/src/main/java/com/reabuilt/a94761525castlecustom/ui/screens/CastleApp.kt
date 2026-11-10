@@ -8,15 +8,18 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LiveTv
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarScope
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -50,7 +53,13 @@ fun CastleApp() {
                     currentRoute = currentRoute,
                     onNavigate = { route ->
                         if (currentRoute != route) {
-                            navController.navigate(route)
+                            navController.navigate(route) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
                         }
                     }
                 )
@@ -70,32 +79,51 @@ fun CastleApp() {
     }
 }
 
+private data class BottomNavItem(
+    val route: String,
+    val label: String,
+    val icon: ImageVector
+)
+
+private val bottomNavItems = listOf(
+    BottomNavItem(ROUTE_HOME, "Home", Icons.Filled.Home),
+    BottomNavItem(ROUTE_FIND, "Find", Icons.Filled.Explore),
+    BottomNavItem(ROUTE_LIVE_TV, "Live TV", Icons.Filled.LiveTv),
+    BottomNavItem(ROUTE_DOWNLOADS, "Downloads", Icons.Filled.Download),
+    BottomNavItem(ROUTE_PROFILE, "Profile", Icons.Filled.Person)
+)
+
 @Composable
 private fun CastleBottomBar(
     currentRoute: String?,
     onNavigate: (String) -> Unit
 ) {
-    NavigationBar {
-        CastleBottomBarItem(ROUTE_HOME, "Home", Icons.Filled.Home, currentRoute, onNavigate)
-        CastleBottomBarItem(ROUTE_FIND, "Find", Icons.Filled.Explore, currentRoute, onNavigate)
-        CastleBottomBarItem(ROUTE_LIVE_TV, "Live TV", Icons.Filled.LiveTv, currentRoute, onNavigate)
-        CastleBottomBarItem(ROUTE_DOWNLOADS, "Downloads", Icons.Filled.Download, currentRoute, onNavigate)
-        CastleBottomBarItem(ROUTE_PROFILE, "Profile", Icons.Filled.Person, currentRoute, onNavigate)
+    NavigationBar(
+        tonalElevation = 8.dp
+    ) {
+        bottomNavItems.forEach { item ->
+            NavigationBarItem(
+                selected = currentRoute == item.route,
+                onClick = { onNavigate(item.route) },
+                icon = {
+                    Icon(
+                        imageVector = item.icon,
+                        contentDescription = item.label
+                    )
+                },
+                label = {
+                    Text(
+                        text = item.label,
+                        style = MaterialTheme.typography.labelSmall
+                    )
+                },
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = MaterialTheme.colorScheme.primary,
+                    selectedContentColor = MaterialTheme.colorScheme.primary,
+                    unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            )
+        }
     }
-}
-
-@Composable
-private fun NavigationBarScope.CastleBottomBarItem(
-    route: String,
-    label: String,
-    icon: ImageVector,
-    currentRoute: String?,
-    onNavigate: (String) -> Unit
-) {
-    NavigationBarItem(
-        icon = { Icon(imageVector = icon, contentDescription = label) },
-        label = { Text(text = label) },
-        selected = currentRoute == route,
-        onClick = { onNavigate(route) }
-    )
 }
