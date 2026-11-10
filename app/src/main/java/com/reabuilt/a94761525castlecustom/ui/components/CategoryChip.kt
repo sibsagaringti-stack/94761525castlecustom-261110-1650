@@ -49,7 +49,7 @@ fun CategoryChip(
             selectedLeadingIconColor = MaterialTheme.colorScheme.onPrimary,
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
             labelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            leadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
+            iconColor = MaterialTheme.colorScheme.onSurfaceVariant
         )
     )
 }

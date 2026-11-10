@@ -1,165 +1,90 @@
 package com.reabuilt.a94761525castlecustom.ui.theme
 
-import android.content.Context
+import android.os.Build
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
-import androidx.core.view.WindowCompat
 import com.reabuilt.a94761525castlecustom.data.model.ThemeMode
-import com.reabuilt.a94761525castlecustom.data.model.UserPreferences
 
 private val LightColorScheme = lightColorScheme(
-    primary = Color(0xFF6B21A8),
-    secondary = Color(0xFFB45309),
-    tertiary = Color(0xFF0F766E),
-    error = Color(0xFFDC2626),
-    surface = Color(0xFFFFFFFF),
-    surfaceVariant = Color(0xFFF5F0FF),
-    background = Color(0xFFFAFAFA),
+    primary = Color(0xFF6750A4),
     onPrimary = Color.White,
+    primaryContainer = Color(0xFFEADDFF),
+    onPrimaryContainer = Color(0xFF21005D),
+    secondary = Color(0xFF625B71),
     onSecondary = Color.White,
+    secondaryContainer = Color(0xFFE8DEF8),
+    onSecondaryContainer = Color(0xFF1D192B),
+    tertiary = Color(0xFF7D5260),
     onTertiary = Color.White,
+    tertiaryContainer = Color(0xFFFFD8E4),
+    onTertiaryContainer = Color(0xFF31111D),
+    error = Color(0xFFBA1A1A),
     onError = Color.White,
-    onSurface = Color(0xFF1C1B1F),
-    onSurfaceVariant = Color(0xFF49454F),
+    errorContainer = Color(0xFFFFDAD6),
+    onErrorContainer = Color(0xFF410002),
+    background = Color(0xFFFEF7FF),
     onBackground = Color(0xFF1C1B1F),
-    outline = Color(0xFF79747E),
-    outlineVariant = Color(0xFFCAC4D0)
+    surface = Color(0xFFFEF7FF),
+    onSurface = Color(0xFF1C1B1F),
+    surfaceVariant = Color(0xFFE7E0EB),
+    onSurfaceVariant = Color(0xFF49454F)
 )
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Color(0xFFC084FC),
-    secondary = Color(0xFFFCD34D),
-    tertiary = Color(0xFF5EEAD4),
-    error = Color(0xFFF87171),
-    surface = Color(0xFF1C1B1F),
-    surfaceVariant = Color(0xFF49454F),
-    background = Color(0xFF100F12),
-    onPrimary = Color.Black,
-    onSecondary = Color.Black,
-    onTertiary = Color.Black,
-    onError = Color.Black,
-    onSurface = Color(0xFFE6E1E5),
-    onSurfaceVariant = Color(0xFFCAC4D0),
+    primary = Color(0xFFD0BCFF),
+    onPrimary = Color(0xFF381E72),
+    primaryContainer = Color(0xFF4F378B),
+    onPrimaryContainer = Color(0xFFEADDFF),
+    secondary = Color(0xFFCBC2DB),
+    onSecondary = Color(0xFF332D41),
+    secondaryContainer = Color(0xFF4A4458),
+    onSecondaryContainer = Color(0xFFE8DEF8),
+    tertiary = Color(0xFFEFB8C8),
+    onTertiary = Color(0xFF412532),
+    tertiaryContainer = Color(0xFF633B48),
+    onTertiaryContainer = Color(0xFFFFD8E4),
+    error = Color(0xFFFFB4AB),
+    onError = Color(0xFF680000),
+    errorContainer = Color(0xFF93000A),
+    onErrorContainer = Color(0xFFFFDAD6),
+    background = Color(0xFF1C1B1F),
     onBackground = Color(0xFFE6E1E5),
-    outline = Color(0xFF938F99),
-    outlineVariant = Color(0xFF49454F)
+    surface = Color(0xFF1C1B1F),
+    onSurface = Color(0xFFE6E1E5),
+    surfaceVariant = Color(0xFF49454F),
+    onSurfaceVariant = Color(0xFFCAC4D0)
 )
 
 @Composable
-fun CastleTheme(
-    preferences: UserPreferences = UserPreferences(),
+fun CastleCustomTheme(
+    themeMode: ThemeMode = ThemeMode.SYSTEM,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
-    val context = LocalContext.current
-    val isSystemDark = androidx.compose.material3.isSystemInDarkTheme()
-
-    val colorScheme = when (preferences.themeMode) {
-        ThemeMode.LIGHT -> LightColorScheme
-        ThemeMode.DARK -> DarkColorScheme
-        ThemeMode.SYSTEM -> if (isSystemDark) DarkColorScheme else LightColorScheme
+    val darkTheme = when (themeMode) {
+        ThemeMode.SYSTEM -> isSystemInDarkTheme()
+        ThemeMode.DARK -> true
+        ThemeMode.LIGHT -> false
     }
 
-    SideEffect {
-        val window = (context as? android.app.Activity)?.window
-        window?.let {
-            WindowCompat.setDecorFitsSystemWindows(it, false)
-            val isDark = colorScheme == DarkColorScheme
-            it.statusBarColor = if (isDark) Color(0xFF100F12).toArgb() else Color(0xFF4C1D95).toArgb()
-            it.navigationBarColor = if (isDark) Color(0xFF100F12).toArgb() else Color(0xFFFFFFFF).toArgb()
-            WindowCompat.getInsetsController(it, it.decorView)?.isAppearanceLightStatusBars = !isDark
-            WindowCompat.getInsetsController(it, it.decorView)?.isAppearanceLightNavigationBars = !isDark
+    val colorScheme = when {
+        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+            val context = LocalContext.current
+            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
+        darkTheme -> DarkColorScheme
+        else -> LightColorScheme
     }
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
         content = content
     )
 }
-
-val Typography = androidx.compose.material3.Typography(
-    displayLarge = androidx.compose.material3.Typography.default.displayLarge.copy(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Bold,
-        letterSpacing = (-0.5).sp
-    ),
-    displayMedium = androidx.compose.material3.Typography.default.displayMedium.copy(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Bold,
-        letterSpacing = 0.sp
-    ),
-    displaySmall = androidx.compose.material3.Typography.default.displaySmall.copy(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Bold,
-        letterSpacing = 0.sp
-    ),
-    headlineLarge = androidx.compose.material3.Typography.default.headlineLarge.copy(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Bold,
-        letterSpacing = 0.sp
-    ),
-    headlineMedium = androidx.compose.material3.Typography.default.headlineMedium.copy(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.SemiBold,
-        letterSpacing = 0.sp
-    ),
-    headlineSmall = androidx.compose.material3.Typography.default.headlineSmall.copy(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.SemiBold,
-        letterSpacing = 0.sp
-    ),
-    titleLarge = androidx.compose.material3.Typography.default.titleLarge.copy(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Medium,
-        letterSpacing = 0.sp
-    ),
-    titleMedium = androidx.compose.material3.Typography.default.titleMedium.copy(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Medium,
-        letterSpacing = 0.15.sp
-    ),
-    titleSmall = androidx.compose.material3.Typography.default.titleSmall.copy(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Medium,
-        letterSpacing = 0.1.sp
-    ),
-    bodyLarge = androidx.compose.material3.Typography.default.bodyLarge.copy(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        letterSpacing = 0.5.sp
-    ),
-    bodyMedium = androidx.compose.material3.Typography.default.bodyMedium.copy(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        letterSpacing = 0.25.sp
-    ),
-    bodySmall = androidx.compose.material3.Typography.default.bodySmall.copy(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        letterSpacing = 0.4.sp
-    ),
-    labelLarge = androidx.compose.material3.Typography.default.labelLarge.copy(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Medium,
-        letterSpacing = 0.1.sp
-    ),
-    labelMedium = androidx.compose.material3.Typography.default.labelMedium.copy(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Medium,
-        letterSpacing = 0.5.sp
-    ),
-    labelSmall = androidx.compose.material3.Typography.default.labelSmall.copy(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Medium,
-        letterSpacing = 0.5.sp
-    )
-)

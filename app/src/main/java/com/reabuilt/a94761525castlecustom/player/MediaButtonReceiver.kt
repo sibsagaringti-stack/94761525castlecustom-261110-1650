@@ -37,13 +37,13 @@ class MediaButtonReceiver : BroadcastReceiver() {
             KeyEvent.KEYCODE_MEDIA_FAST_FORWARD -> {
                 val position = player.currentPosition
                 if (position != C.TIME_UNSET) {
-                    player.setPlaybackPosition(position + SEEK_FORWARD_MS)
+                    player.seekTo(position + SEEK_FORWARD_MS)
                 }
             }
             KeyEvent.KEYCODE_MEDIA_REWIND -> {
                 val position = player.currentPosition
                 if (position != C.TIME_UNSET) {
-                    player.setPlaybackPosition(maxOf(0L, position - SEEK_BACK_MS))
+                    player.seekTo(maxOf(0L, position - SEEK_BACK_MS))
                 }
             }
         }
