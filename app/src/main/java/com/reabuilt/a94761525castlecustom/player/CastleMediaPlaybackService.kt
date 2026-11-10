@@ -7,10 +7,14 @@ import android.content.Context
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSessionService
-import androidx.media3.session.MediaStyleNotificationData
-import androidx.media3.session.mediaStyleNotificationDataToBuilder
 import com.reabuilt.a94761525castlecustom.R
 
+/**
+ * Foreground media playback service for Castle Custom.
+ *
+ * It owns an [ExoPlayer] and a [MediaSession] so background playback can continue
+ * while a persistent notification is shown. No ads / subscription logic is involved.
+ */
 class CastleMediaPlaybackService : MediaSessionService() {
 
     private var mediaSession: MediaSession? = null
@@ -19,17 +23,18 @@ class CastleMediaPlaybackService : MediaSessionService() {
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
-        val player = ExoPlayer.Builder(this).build()
-        exoPlayer = player
-        mediaSession = MediaSession.Builder(this, player, "Castle Custom Playback", null).build()
         startForeground(NOTIFICATION_ID, buildNotification("Castle Custom", "Media playback ready"))
     }
 
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaSession {
-        return mediaSession ?: MediaSession
-            .Builder(this, ExoPlayer.Builder(this).build(), "Castle Custom Playback", null)
-            .build()
-            .also { mediaSession = it }
+        mediaSession?.let { return it }
+
+        val player = ExoPlayer.Builder(this).build()
+        exoPlayer = player
+
+        val session = MediaSession.Builder(this, player).build()
+        mediaSession = session
+        return session
     }
 
     override fun onDestroy() {
@@ -41,28 +46,26 @@ class CastleMediaPlaybackService : MediaSessionService() {
     }
 
     private fun createNotificationChannel() {
-        val channel = NotificationChannel(CHANNEL_ID, "Playback", NotificationManager.IMPORTANCE_LOW)
-        channel.description = "Shows media playback controls for Castle Custom"
-        (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
-            .createNotificationChannel(channel)
+        val channel = NotificationChannel(
+            CHANNEL_ID,
+            "Playback",
+            NotificationManager.IMPORTANCE_LOW
+        )
+        channel.description = "Shows media playback status for Castle Custom"
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
     }
 
     private fun buildNotification(title: String, text: String): Notification {
-        val builder = Notification.Builder(this, CHANNEL_ID)
+        return Notification.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_launcher)
-            .setOngoing(true)
             .setContentTitle(title)
             .setContentText(text)
-        mediaSession?.sessionToken?.let { token ->
-            val data = MediaStyleNotificationData.Builder()
-                .setSessionToken(token)
-                .setContentTitle(title)
-                .setContentText(text)
-                .setSmallIcon(R.drawable.ic_launcher)
-                .build()
-            builder.apply { mediaStyleNotificationDataToBuilder(data, this) }
-        }
-        return builder.build()
+            .setOngoing(true)
+            .setShowWhen(false)
+            .setCategory(Notification.CATEGORY_SERVICE)
+            .build()
     }
 
     companion object {

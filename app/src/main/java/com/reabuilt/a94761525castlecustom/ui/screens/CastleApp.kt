@@ -8,7 +8,6 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LiveTv
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarScope
@@ -18,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -30,31 +28,32 @@ import com.reabuilt.a94761525castlecustom.navigation.ROUTE_ONBOARDING
 import com.reabuilt.a94761525castlecustom.navigation.ROUTE_PROFILE
 import com.reabuilt.a94761525castlecustom.navigation.ROUTE_SPLASH
 import com.reabuilt.a94761525castlecustom.navigation.appNavGraph
-import com.reabuilt.a94761525castlecustom.viewmodel.MainViewModel
 
 @Composable
-fun CastleApp(viewModel: MainViewModel) {
+fun CastleApp() {
     val navController = rememberNavController()
-    val backStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = backStackEntry?.destination?.route
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
 
-    val mainTabRoutes = setOf(ROUTE_HOME, ROUTE_FIND, ROUTE_LIVE_TV, ROUTE_DOWNLOADS, ROUTE_PROFILE)
+    val bottomBarVisible = currentRoute in listOf(
+        ROUTE_HOME,
+        ROUTE_FIND,
+        ROUTE_LIVE_TV,
+        ROUTE_DOWNLOADS,
+        ROUTE_PROFILE
+    )
 
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
         bottomBar = {
-            if (currentRoute in mainTabRoutes) {
-                CastleBottomBar(currentRoute = currentRoute) { targetRoute ->
-                    if (targetRoute != currentRoute) {
-                        navController.navigate(targetRoute) {
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-                            launchSingleTop = true
-                            restoreState = true
+            if (bottomBarVisible) {
+                CastleBottomBar(
+                    currentRoute = currentRoute,
+                    onNavigate = { route ->
+                        if (currentRoute != route) {
+                            navController.navigate(route)
                         }
                     }
-                }
+                )
             }
         }
     ) { innerPadding ->
@@ -64,17 +63,8 @@ fun CastleApp(viewModel: MainViewModel) {
             modifier = Modifier.padding(innerPadding)
         ) {
             appNavGraph(
-                onNavigateToHome = {
-                    navController.navigate(ROUTE_HOME) {
-                        popUpTo(ROUTE_SPLASH) { inclusive = true }
-                        launchSingleTop = true
-                    }
-                },
-                onNavigateToOnboarding = {
-                    navController.navigate(ROUTE_ONBOARDING) {
-                        popUpTo(ROUTE_SPLASH) { inclusive = true }
-                    }
-                }
+                onNavigateToHome = { navController.navigate(ROUTE_HOME) },
+                onNavigateToOnboarding = { navController.navigate(ROUTE_ONBOARDING) }
             )
         }
     }
@@ -83,29 +73,29 @@ fun CastleApp(viewModel: MainViewModel) {
 @Composable
 private fun CastleBottomBar(
     currentRoute: String?,
-    onTabSelected: (String) -> Unit
+    onNavigate: (String) -> Unit
 ) {
-    NavigationBar(color = MaterialTheme.colorScheme.surface) {
-        bottomItem(ROUTE_HOME, Icons.Filled.Home, "Home", currentRoute, onTabSelected)
-        bottomItem(ROUTE_FIND, Icons.Filled.Explore, "Find", currentRoute, onTabSelected)
-        bottomItem(ROUTE_LIVE_TV, Icons.Filled.LiveTv, "Live TV", currentRoute, onTabSelected)
-        bottomItem(ROUTE_DOWNLOADS, Icons.Filled.Download, "Downloads", currentRoute, onTabSelected)
-        bottomItem(ROUTE_PROFILE, Icons.Filled.Person, "Profile", currentRoute, onTabSelected)
+    NavigationBar {
+        CastleBottomBarItem(ROUTE_HOME, "Home", Icons.Filled.Home, currentRoute, onNavigate)
+        CastleBottomBarItem(ROUTE_FIND, "Find", Icons.Filled.Explore, currentRoute, onNavigate)
+        CastleBottomBarItem(ROUTE_LIVE_TV, "Live TV", Icons.Filled.LiveTv, currentRoute, onNavigate)
+        CastleBottomBarItem(ROUTE_DOWNLOADS, "Downloads", Icons.Filled.Download, currentRoute, onNavigate)
+        CastleBottomBarItem(ROUTE_PROFILE, "Profile", Icons.Filled.Person, currentRoute, onNavigate)
     }
 }
 
 @Composable
-private fun NavigationBarScope.bottomItem(
+private fun NavigationBarScope.CastleBottomBarItem(
     route: String,
-    icon: ImageVector,
     label: String,
+    icon: ImageVector,
     currentRoute: String?,
-    onTabSelected: (String) -> Unit
+    onNavigate: (String) -> Unit
 ) {
     NavigationBarItem(
-        selected = currentRoute == route,
-        onClick = { onTabSelected(route) },
         icon = { Icon(imageVector = icon, contentDescription = label) },
-        label = { Text(label) }
+        label = { Text(text = label) },
+        selected = currentRoute == route,
+        onClick = { onNavigate(route) }
     )
 }
