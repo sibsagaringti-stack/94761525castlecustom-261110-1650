@@ -1,0 +1,67 @@
+<resources>
+    <!-- Spacing -->
+    <dimen name="spacing_xxs">2dp</dimen>
+    <dimen name="spacing_xs">4dp</dimen>
+    <dimen name="spacing_sm">8dp</dimen>
+    <dimen name="spacing_md">12dp</dimen>
+    <dimen name="spacing_lg">16dp</dimen>
+    <dimen name="spacing_xl">24dp</dimen>
+    <dimen name="spacing_xxl">32dp</dimen>
+    <dimen name="spacing_xxxl">48dp</dimen>
+
+    <!-- Corner Radius -->
+    <dimen name="corner_radius_xs">4dp</dimen>
+    <dimen name="corner_radius_sm">8dp</dimen>
+    <dimen name="corner_radius_md">12dp</dimen>
+    <dimen name="corner_radius_lg">16dp</dimen>
+    <dimen name="corner_radius_xl">24dp</dimen>
+    <dimen name="corner_radius_full">9999dp</dimen>
+
+    <!-- Content Card Dimensions -->
+    <dimen name="content_card_width_small">112dp</dimen>
+    <dimen name="content_card_width_medium">140dp</dimen>
+    <dimen name="content_card_width_large">168dp</dimen>
+    <dimen name="content_card_width_xlarge">200dp</dimen>
+    <dimen name="content_card_aspect_ratio">0.7</dimen>
+    <dimen name="content_card_aspect_ratio_wide">1.78</dimen>
+
+    <!-- Typography -->
+    <dimen name="text_size_xs">10sp</dimen>
+    <dimen name="text_size_sm">12sp</dimen>
+    <dimen name="text_size_md">14sp</dimen>
+    <dimen name="text_size_lg">16sp</dimen>
+    <dimen name="text_size_xl">18sp</dimen>
+    <dimen name="text_size_xxl">20sp</dimen>
+    <dimen name="text_size_xxxl">24sp</dimen>
+    <dimen name="text_size_display_small">36sp</dimen>
+    <dimen name="text_size_display_medium">45sp</dimen>
+    <dimen name="text_size_display_large">57sp</dimen>
+
+    <!-- Icon Sizes -->
+    <dimen name="icon_size_xs">16dp</dimen>
+    <dimen name="icon_size_sm">20dp</dimen>
+    <dimen name="icon_size_md">24dp</dimen>
+    <dimen name="icon_size_lg">28dp</dimen>
+    <dimen name="icon_size_xl">32dp</dimen>
+    <dimen name="icon_size_xxl">48dp</dimen>
+
+    <!-- App Bar -->
+    <dimen name="app_bar_height">64dp</dimen>
+    <dimen name="app_bar_height_expanded">200dp</dimen>
+
+    <!-- Navigation Bar -->
+    <dimen name="nav_bar_height">72dp</dimen>
+    <dimen name="nav_bar_item_padding">8dp</dimen>
+
+    <!-- Player -->
+    <dimen name="player_controls_height">120dp</dimen>
+    <dimen name="player_progress_height">4dp</dimen>
+    <dimen name="player_progress_height_touch">24dp</dimen>
+
+    <!-- Elevation -->
+    <dimen name="elevation_level_1">1dp</dimen>
+    <dimen name="elevation_level_2">3dp</dimen>
+    <dimen name="elevation_level_3">6dp</dimen>
+    <dimen name="elevation_level_4">8dp</dimen>
+    <dimen name="elevation_level_5">12dp</dimen>
+</resources>
