@@ -38,7 +38,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.navigation.compose.LocalNavController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.reabuilt.a94761525castlecustom.data.model.DownloadItem
 import com.reabuilt.a94761525castlecustom.data.model.DownloadStatus
@@ -48,7 +48,7 @@ import java.util.Locale
 @Composable
 fun DownloadsScreen() {
     val viewModel = rememberMainViewModel()
-    val navController = LocalNavController.current
+    val navController = rememberNavController()
     val downloads by viewModel.downloads.collectAsState()
 
     Column(modifier = Modifier.fillMaxSize()) {

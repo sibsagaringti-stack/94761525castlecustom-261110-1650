@@ -49,7 +49,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.navigation.compose.LocalNavController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.reabuilt.a94761525castlecustom.data.model.Content
 import com.reabuilt.a94761525castlecustom.data.model.ContentType
@@ -63,7 +63,7 @@ import com.reabuilt.a94761525castlecustom.viewmodel.rememberMainViewModel
 @Composable
 fun DetailScreen(contentId: String) {
     val viewModel = rememberMainViewModel()
-    val navController = LocalNavController.current
+    val navController = rememberNavController()
     val context = LocalContext.current
 
     val watchlist by viewModel.watchlist.collectAsState()

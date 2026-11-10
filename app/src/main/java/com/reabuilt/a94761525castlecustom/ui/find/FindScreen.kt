@@ -36,7 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.navigation.compose.LocalNavController
+import androidx.navigation.compose.rememberNavController
 import com.reabuilt.a94761525castlecustom.data.model.ContentType
 import com.reabuilt.a94761525castlecustom.navigation.ROUTE_SEARCH
 import com.reabuilt.a94761525castlecustom.ui.components.CategoryChip
@@ -47,7 +47,7 @@ import com.reabuilt.a94761525castlecustom.viewmodel.rememberMainViewModel
 @Composable
 fun FindScreen() {
     val viewModel = rememberMainViewModel()
-    val navController = LocalNavController.current
+    val navController = rememberNavController()
 
     val trending by viewModel.trendingContent.collectAsState()
     val recommended by viewModel.recommendedContent.collectAsState()
