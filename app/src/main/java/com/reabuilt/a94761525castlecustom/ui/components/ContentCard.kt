@@ -35,8 +35,6 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.reabuilt.a94761525castlecustom.data.model.Content
 import com.reabuilt.a94761525castlecustom.data.model.VideoQuality
-
-// Fix the import for Icons - it was incorrectly referenced as "icons" but should be from material3
 import androidx.compose.material3.icons.Icons
 import androidx.compose.material3.icons.filled.Bookmark
 import androidx.compose.material3.icons.filled.BookmarkBorder

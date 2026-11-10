@@ -95,7 +95,14 @@ fun CastleApp(application: CastleApplication) {
             }
         }
     ) { padding ->
-        // The navigation graph is set up in the separate file
-        // This function is just for setting up the bottom bar and scaffold
+        androidx.navigation.compose.NavHost(
+            navController = navController,
+            startDestination = com.reabuilt.a94761525castlecustom.navigation.ROUTE_SPLASH,
+            modifier = Modifier.padding(padding)
+        ) {
+            appNavGraph(
+                onNavigateToHome = { navController.navigate(ROUTE_HOME) }
+            )
+        }
     }
 }
