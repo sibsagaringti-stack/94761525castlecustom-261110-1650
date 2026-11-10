@@ -31,6 +31,15 @@ import com.reabuilt.a94761525castlecustom.ui.find.FindScreen
 import com.reabuilt.a94761525castlecustom.ui.livetv.LiveTvScreen
 import com.reabuilt.a94761525castlecustom.ui.downloads.DownloadsScreen
 import com.reabuilt.a94761525castlecustom.ui.profile.ProfileScreen
+import com.reabuilt.a94761525castlecustom.ui.search.SearchScreen
+import com.reabuilt.a94761525castlecustom.ui.detail.DetailScreen
+import com.reabuilt.a94761525castlecustom.ui.player.PlayerScreen
+import androidx.compose.material3.icons.Icons
+import androidx.compose.material3.icons.filled.Home
+import androidx.compose.material3.icons.filled.Search
+import androidx.compose.material3.icons.filled.LiveTv
+import androidx.compose.material3.icons.filled.Download
+import androidx.compose.material3.icons.filled.Person
 
 @Composable
 fun CastleApp(application: CastleApplication) {
@@ -55,54 +64,38 @@ fun CastleApp(application: CastleApplication) {
                     NavigationBarItem(
                         selected = currentRoute == ROUTE_HOME,
                         onClick = { navController.navigate(ROUTE_HOME) },
-                        icon = { Icon(androidx.compose.material3.icons.Icons.Filled.Home, contentDescription = "Home") },
+                        icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
                         label = { Text("Home") }
                     )
                     NavigationBarItem(
                         selected = currentRoute == ROUTE_FIND,
                         onClick = { navController.navigate(ROUTE_FIND) },
-                        icon = { Icon(androidx.compose.material3.icons.Icons.Filled.Search, contentDescription = "Find") },
+                        icon = { Icon(Icons.Default.Search, contentDescription = "Find") },
                         label = { Text("Find") }
                     )
                     NavigationBarItem(
                         selected = currentRoute == ROUTE_LIVE_TV,
                         onClick = { navController.navigate(ROUTE_LIVE_TV) },
-                        icon = { Icon(androidx.compose.material3.icons.Icons.Filled.LiveTv, contentDescription = "Live TV") },
+                        icon = { Icon(Icons.Default.LiveTv, contentDescription = "Live TV") },
                         label = { Text("Live TV") }
                     )
                     NavigationBarItem(
                         selected = currentRoute == ROUTE_DOWNLOADS,
                         onClick = { navController.navigate(ROUTE_DOWNLOADS) },
-                        icon = { Icon(androidx.compose.material3.icons.Icons.Filled.Download, contentDescription = "Downloads") },
+                        icon = { Icon(Icons.Default.Download, contentDescription = "Downloads") },
                         label = { Text("Downloads") }
                     )
                     NavigationBarItem(
                         selected = currentRoute == ROUTE_PROFILE,
                         onClick = { navController.navigate(ROUTE_PROFILE) },
-                        icon = { Icon(androidx.compose.material3.icons.Icons.Filled.Person, contentDescription = "Profile") },
+                        icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
                         label = { Text("Profile") }
                     )
                 }
             }
         }
-    ) { paddingValues ->
-        androidx.compose.foundation.layout.Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-            androidx.navigation.compose.NavHost(
-                navController = navController,
-                startDestination = ROUTE_HOME
-            ) {
-                appNavGraph(
-                    onNavigateToHome = {
-                        navController.navigate(ROUTE_HOME) {
-                            popUpTo(0) { inclusive = true }
-                        }
-                    }
-                )
-            }
-        }
+    ) { padding ->
+        // The navigation graph is set up in the separate file
+        // This function is just for setting up the bottom bar and scaffold
     }
 }
