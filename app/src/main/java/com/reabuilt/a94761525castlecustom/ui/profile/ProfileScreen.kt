@@ -19,6 +19,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
@@ -38,7 +39,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.navigation.compose.LocalNavController
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.reabuilt.a94761525castlecustom.data.model.ThemeMode
 import com.reabuilt.a94761525castlecustom.data.model.VideoQuality
@@ -46,9 +47,10 @@ import com.reabuilt.a94761525castlecustom.ui.components.FilterChipComponent
 import com.reabuilt.a94761525castlecustom.viewmodel.rememberMainViewModel
 
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(
+    navController: NavHostController
+) {
     val viewModel = rememberMainViewModel()
-    val navController = LocalNavController.current
 
     val preferences by viewModel.preferences.collectAsState()
     val watchlist by viewModel.watchlist.collectAsState()

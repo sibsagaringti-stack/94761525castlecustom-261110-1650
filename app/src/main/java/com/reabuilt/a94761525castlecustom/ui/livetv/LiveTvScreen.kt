@@ -40,7 +40,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.findNavController
 import coil.compose.AsyncImage
 import com.reabuilt.a94761525castlecustom.data.model.LiveChannel
 import com.reabuilt.a94761525castlecustom.data.model.LiveTvCategory
@@ -49,7 +48,7 @@ import com.reabuilt.a94761525castlecustom.viewmodel.rememberMainViewModel
 
 @Composable
 fun LiveTvScreen(
-    navController: NavHostController = findNavController()
+    navController: NavHostController
 ) {
     val viewModel = rememberMainViewModel()
     val channels by viewModel.liveChannels.collectAsState()

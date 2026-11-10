@@ -39,7 +39,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.findNavController
 import coil.compose.AsyncImage
 import com.reabuilt.a94761525castlecustom.data.model.Content
 import com.reabuilt.a94761525castlecustom.navigation.ROUTE_SEARCH
@@ -49,7 +48,7 @@ import com.reabuilt.a94761525castlecustom.viewmodel.rememberMainViewModel
 
 @Composable
 fun HomeScreen(
-    navController: NavHostController = findNavController()
+    navController: NavHostController
 ) {
     val viewModel = rememberMainViewModel()
 
