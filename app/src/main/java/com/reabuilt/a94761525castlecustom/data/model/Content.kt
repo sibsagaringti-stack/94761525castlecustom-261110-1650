@@ -1,14 +1,10 @@
 package com.reabuilt.a94761525castlecustom.data.model
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
 import kotlinx.serialization.Serializable
-import java.io.Serializable
 
 @Serializable
-@Entity(tableName = "content")
 data class Content(
-    @PrimaryKey val id: String,
+    val id: String,
     val title: String,
     val description: String,
     val posterUrl: String,
@@ -30,12 +26,12 @@ data class Content(
     val seasonCount: Int = 0,
     val episodeCount: Int = 0,
     val trailerUrl: String? = null,
-    val streamUrls: Map<String, String> = emptyMap(), // quality -> url
-    val subtitleUrls: Map<String, String> = emptyMap(), // language -> url
+    val streamUrls: Map<String, String> = emptyMap(),
+    val subtitleUrls: Map<String, String> = emptyMap(),
     val isLive: Boolean = false,
     val channelNumber: Int? = null,
     val category: String? = null
-) : Serializable
+)
 
 enum class ContentType(val displayName: String) {
     MOVIE("Movie"),

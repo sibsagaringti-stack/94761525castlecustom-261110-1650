@@ -13,8 +13,9 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import com.reabuilt.a94761525castlecustom.navigation.ROUTE_HOME
 import com.reabuilt.a94761525castlecustom.navigation.appNavGraph
+import com.reabuilt.a94761525castlecustom.navigation.ROUTE_HOME
+import com.reabuilt.a94761525castlecustom.navigation.ROUTE_SPLASH
 import com.reabuilt.a94761525castlecustom.ui.theme.CastleTheme
 import com.reabuilt.a94761525castlecustom.viewmodel.MainViewModel
 
@@ -22,11 +23,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        
         setContent {
-            val application = applicationContext as CastleApplication
-            val viewModel: MainViewModel = viewModel(factory = CastleViewModelFactory(application))
-            
+            val viewModel: MainViewModel = viewModel { MainViewModel(application as CastleApplication) }
             val preferences by viewModel.preferences.collectAsState()
             
             CastleTheme(preferences = preferences) {
@@ -38,12 +36,12 @@ class MainActivity : ComponentActivity() {
                     
                     NavHost(
                         navController = navController,
-                        startDestination = ROUTE_HOME
+                        startDestination = ROUTE_SPLASH
                     ) {
                         appNavGraph(
                             onNavigateToHome = {
                                 navController.navigate(ROUTE_HOME) {
-                                    popUpTo(0) { inclusive = true }
+                                    popUpTo(ROUTE_SPLASH) { inclusive = true }
                                 }
                             }
                         )

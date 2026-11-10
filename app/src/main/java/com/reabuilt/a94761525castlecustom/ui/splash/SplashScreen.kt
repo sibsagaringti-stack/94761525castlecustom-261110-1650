@@ -1,40 +1,41 @@
 package com.reabuilt.a94761525castlecustom.ui.splash
 
-import androidx.compose.animation.core.*
-import androidx.compose.foundation.Image
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 
 @Composable
-fun SplashScreen(onNavigateToHome: () -> Unit) {
-    var startAnimation by remember { mutableStateOf(false) }
+fun SplashScreen(
+    onNavigateToHome: () -> Unit
+) {
     val scale = remember { Animatable(0f) }
-
+    
     LaunchedEffect(key1 = true) {
         scale.animateTo(
             targetValue = 1f,
-            animationSpec = tween(
-                durationMillis = 800,
-                easing = FastOutSlowInEasing
-            )
+            animationSpec = tween(800)
         )
-        startAnimation = true
         delay(1500)
         onNavigateToHome()
     }
-
+    
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -43,21 +44,25 @@ fun SplashScreen(onNavigateToHome: () -> Unit) {
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier.scale(scale.value)
+            verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "Castle",
-                fontSize = 48.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
+                text = "🏰",
+                fontSize = 80.sp,
+                modifier = Modifier.scale(scale.value)
             )
             Text(
-                text = "Custom",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Light,
-                color = Color.White.copy(alpha = 0.8f),
-                modifier = Modifier.padding(top = 8.dp)
+                text = "Castle Custom",
+                fontSize = 32.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier.scale(scale.value)
+            )
+            Text(
+                text = "Your Entertainment Destination",
+                fontSize = 16.sp,
+                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f),
+                modifier = Modifier.scale(scale.value)
             )
         }
     }
