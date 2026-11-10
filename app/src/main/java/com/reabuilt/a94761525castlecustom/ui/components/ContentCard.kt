@@ -2,6 +2,7 @@ package com.reabuilt.a94761525castlecustom.ui.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -40,6 +41,10 @@ import androidx.compose.material3.icons.filled.BookmarkBorder
 import androidx.compose.material3.icons.filled.PlayArrow
 import androidx.compose.material3.icons.filled.Star
 
+enum class ContentCardSize {
+    SMALL, MEDIUM, LARGE, XLARGE
+}
+
 @Composable
 fun ContentCard(
     content: Content,
@@ -48,14 +53,28 @@ fun ContentCard(
     isWatchlisted: Boolean = false,
     showWatchProgress: Boolean = false,
     watchProgress: Int = 0,
+    size: ContentCardSize = ContentCardSize.MEDIUM,
     modifier: Modifier = Modifier
 ) {
     var isWatchlistedState by remember { mutableStateOf(isWatchlisted) }
     
+    val cardWidth = when (size) {
+        ContentCardSize.SMALL -> 112.dp
+        ContentCardSize.MEDIUM -> 140.dp
+        ContentCardSize.LARGE -> 168.dp
+        ContentCardSize.XLARGE -> 200.dp
+    }
+    val cardHeight = when (size) {
+        ContentCardSize.SMALL -> 180.dp
+        ContentCardSize.MEDIUM -> 220.dp
+        ContentCardSize.LARGE -> 260.dp
+        ContentCardSize.XLARGE -> 300.dp
+    }
+    
     Card(
         modifier = modifier
-            .width(140.dp)
-            .height(220.dp),
+            .width(cardWidth)
+            .height(cardHeight),
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         onClick = onClick
@@ -65,7 +84,7 @@ fun ContentCard(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(180.dp)
+                        .height((cardWidth.value * 1.5).dp)
                 ) {
                     AsyncImage(
                         model = ImageRequest.Builder(LocalContext.current)
@@ -77,21 +96,19 @@ fun ContentCard(
                         modifier = Modifier.fillMaxWidth()
                     )
                     
-                    content.quality.let { quality ->
-                        Surface(
-                            modifier = Modifier
-                                .align(Alignment.TopEnd)
-                                .padding(4.dp),
-                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
-                            shape = RoundedCornerShape(4.dp)
-                        ) {
-                            Text(
-                                text = quality.displayName,
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onPrimary,
-                                modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
-                            )
-                        }
+                    Surface(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(4.dp),
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
+                        shape = RoundedCornerShape(4.dp)
+                    ) {
+                        Text(
+                            text = content.quality.displayName,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
+                        )
                     }
                     
                     IconButton(

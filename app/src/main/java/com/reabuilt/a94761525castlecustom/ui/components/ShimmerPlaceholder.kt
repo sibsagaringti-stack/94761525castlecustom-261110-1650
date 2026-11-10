@@ -5,27 +5,28 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.LinearGradient
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.reabuilt.a94761525castlecustom.ui.theme.CastleTheme
 
 @Composable
 fun ContentCardShimmer(
@@ -38,33 +39,36 @@ fun ContentCardShimmer(
         ContentCardSize.LARGE -> 168.dp
         ContentCardSize.XLARGE -> 200.dp
     }
-    val cardHeight = cardWidth / 0.7f
+    val cardHeight = when (size) {
+        ContentCardSize.SMALL -> 180.dp
+        ContentCardSize.MEDIUM -> 220.dp
+        ContentCardSize.LARGE -> 260.dp
+        ContentCardSize.XLARGE -> 300.dp
+    }
 
     val infiniteTransition = rememberInfiniteTransition()
     val alpha by infiniteTransition.animateFloat(
         initialValue = 0.4f,
         targetValue = 1f,
         animationSpec = infiniteRepeatable(
-            animationSpec = tween(1000, delayMillis = 0, easing = androidx.compose.animation.core.LinearEasing),
+            animationSpec = tween(1000, delayMillis = 0),
             repeatMode = androidx.compose.animation.core.RepeatMode.Reverse
         )
     )
 
     val shimmerBrush = Brush.linearGradient(
         colors = listOf(
-            CastleTheme.colorScheme.surfaceVariant.copy(alpha = alpha),
-            CastleTheme.colorScheme.surface.copy(alpha = alpha),
-            CastleTheme.colorScheme.surfaceVariant.copy(alpha = alpha)
-        ),
-        start = androidx.compose.ui.geometry.Offset(0f, 0f),
-        end = androidx.compose.ui.geometry.Offset(cardWidth.value, 0f)
+            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = alpha),
+            MaterialTheme.colorScheme.surface.copy(alpha = alpha),
+            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = alpha)
+        )
     )
 
     Card(
         modifier = modifier.width(cardWidth).height(cardHeight),
-        elevation = androidx.compose.material3.CardDefaults.cardElevation(defaultElevation = 2.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         shape = RoundedCornerShape(12.dp),
-        colors = androidx.compose.material3.CardDefaults.cardColors(containerColor = CastleTheme.colorScheme.surface)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column {
             Box(
@@ -108,11 +112,27 @@ fun ContentRowShimmer(
     cardSize: ContentCardSize = ContentCardSize.MEDIUM,
     count: Int = 5
 ) {
+    val infiniteTransition = rememberInfiniteTransition()
+    val alpha by infiniteTransition.animateFloat(
+        initialValue = 0.4f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animationSpec = tween(1000, delayMillis = 0),
+            repeatMode = androidx.compose.animation.core.RepeatMode.Reverse
+        )
+    )
+    val shimmerBrush = Brush.linearGradient(
+        colors = listOf(
+            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = alpha),
+            MaterialTheme.colorScheme.surface.copy(alpha = alpha),
+            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = alpha)
+        )
+    )
+
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Header shimmer
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -122,12 +142,11 @@ fun ContentRowShimmer(
                 modifier = Modifier
                     .width(120.dp)
                     .height(24.dp)
-                    .background(shimmerBrushForWidth(120.dp), RoundedCornerShape(4.dp))
+                    .background(shimmerBrush, RoundedCornerShape(4.dp))
             )
         }
 
-        // Cards shimmer
-        androidx.compose.foundation.lazy.LazyRow(
+        LazyRow(
             modifier = Modifier.padding(horizontal = 12.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
@@ -136,26 +155,4 @@ fun ContentRowShimmer(
             }
         }
     }
-}
-
-@Composable
-fun shimmerBrushForWidth(width: androidx.compose.ui.unit.Dp): Brush {
-    val infiniteTransition = rememberInfiniteTransition()
-    val alpha by infiniteTransition.animateFloat(
-        initialValue = 0.4f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animationSpec = tween(1000, delayMillis = 0, easing = androidx.compose.animation.core.LinearEasing),
-            repeatMode = androidx.compose.animation.core.RepeatMode.Reverse
-        )
-    )
-    return Brush.linearGradient(
-        colors = listOf(
-            CastleTheme.colorScheme.surfaceVariant.copy(alpha = alpha),
-            CastleTheme.colorScheme.surface.copy(alpha = alpha),
-            CastleTheme.colorScheme.surfaceVariant.copy(alpha = alpha)
-        ),
-        start = androidx.compose.ui.geometry.Offset(0f, 0f),
-        end = androidx.compose.ui.geometry.Offset(width.value, 0f)
-    )
 }

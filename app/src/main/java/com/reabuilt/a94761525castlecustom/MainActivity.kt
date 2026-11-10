@@ -11,11 +11,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.rememberNavController
-import com.reabuilt.a94761525castlecustom.navigation.appNavGraph
-import com.reabuilt.a94761525castlecustom.navigation.ROUTE_HOME
-import com.reabuilt.a94761525castlecustom.navigation.ROUTE_SPLASH
+import com.reabuilt.a94761525castlecustom.ui.screens.CastleApp
 import com.reabuilt.a94761525castlecustom.ui.theme.CastleTheme
 import com.reabuilt.a94761525castlecustom.viewmodel.MainViewModel
 
@@ -32,20 +28,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val navController = rememberNavController()
-                    
-                    NavHost(
-                        navController = navController,
-                        startDestination = ROUTE_SPLASH
-                    ) {
-                        appNavGraph(
-                            onNavigateToHome = {
-                                navController.navigate(ROUTE_HOME) {
-                                    popUpTo(ROUTE_SPLASH) { inclusive = true }
-                                }
-                            }
-                        )
-                    }
+                    CastleApp(application = application as CastleApplication)
                 }
             }
         }

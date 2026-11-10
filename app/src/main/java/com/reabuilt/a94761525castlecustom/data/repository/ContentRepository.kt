@@ -8,6 +8,7 @@ import com.reabuilt.a94761525castlecustom.data.model.DownloadStatus
 import com.reabuilt.a94761525castlecustom.data.model.FeaturedCollection
 import com.reabuilt.a94761525castlecustom.data.model.LiveChannel
 import com.reabuilt.a94761525castlecustom.data.model.LiveTvCategory
+import com.reabuilt.a94761525castlecustom.data.model.ThemeMode
 import com.reabuilt.a94761525castlecustom.data.model.UserPreferences
 import com.reabuilt.a94761525castlecustom.data.model.VideoQuality
 import com.reabuilt.a94761525castlecustom.data.model.WatchHistoryItem
