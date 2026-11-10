@@ -1,20 +1,25 @@
 package com.reabuilt.a94761525castlecustom.player
 
 import android.content.Context
-import com.google.android.exoplayer2.database.DatabaseProvider
-import com.google.android.exoplayer2.download.DownloadTracker
+import androidx.media3.database.DatabaseProvider
+import androidx.media3.datasource.DefaultHttpDataSource
+import androidx.media3.exoplayer.offline.DownloadManager
+import androidx.media3.exoplayer.offline.DownloadTracker
 
 object DownloadTrackerProvider {
+    
+    @Volatile
     private var instance: DownloadTracker? = null
-
+    
     fun getInstance(context: Context, databaseProvider: DatabaseProvider): DownloadTracker {
-        if (instance == null) {
-            instance = DownloadTracker(
+        return instance ?: synchronized(this) {
+            val tracker = DownloadTracker(
                 context,
-                com.google.android.exoplayer2.upstream.DefaultHttpDataSource.Factory(),
+                DefaultHttpDataSource.Factory(),
                 databaseProvider
             )
+            instance = tracker
+            tracker
         }
-        return instance!!
     }
 }

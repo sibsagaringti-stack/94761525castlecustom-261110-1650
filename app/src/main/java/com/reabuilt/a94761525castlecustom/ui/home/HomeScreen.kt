@@ -9,11 +9,18 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -22,126 +29,176 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.reabuilt.a94761525castlecustom.CastleViewModel
-import com.reabuilt.a94761525castlecustom.CastleViewModelFactory
+import com.reabuilt.a94761525castlecustom.data.model.Content
+import com.reabuilt.a94761525castlecustom.data.model.FeaturedCollection
 import com.reabuilt.a94761525castlecustom.ui.components.ContentCard
+import com.reabuilt.a94761525castlecustom.viewmodel.MainViewModel
+import androidx.compose.material3.icons.Icons
+import androidx.compose.material3.icons.filled.Search
+import androidx.compose.material3.icons.filled.Person
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    onContentClick: (String) -> Unit,
-    onNavigateToLiveTv: () -> Unit
+    viewModel: MainViewModel = viewModel()
 ) {
-    val viewModel: CastleViewModel = viewModel(
-        factory = CastleViewModelFactory(
-            androidx.compose.ui.platform.LocalContext.current.applicationContext as com.reabuilt.a94761525castlecustom.CastleApplication
-        )
-    )
-
     val trending by viewModel.trendingContent.collectAsState()
     val continueWatching by viewModel.continueWatching.collectAsState()
-    val featured by viewModel.featuredCollections.collectAsState()
-
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
-    ) {
-        // Header
-        item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column {
+    val featuredCollections by viewModel.featuredCollections.collectAsState()
+    
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { 
                     Text(
-                        text = "Welcome Back",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Text(
-                        text = "Discover Amazing Content",
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                }
-            }
-        }
-
-        // Continue Watching
-        if (continueWatching.isNotEmpty()) {
-            item {
-                SectionHeader(title = "Continue Watching")
-            }
-            item {
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    contentPadding = PaddingValues(horizontal = 4.dp)
-                ) {
-                    items(continueWatching) { content ->
-                        ContentCard(
-                            content = content,
-                            onClick = { onContentClick(content.id) },
-                            onWatchlistToggle = { viewModel.toggleWatchlist(content.id) }
+                        "Castle Custom",
+                        fontWeight = FontWeight.Bold
+                    ) 
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                ),
+                actions = {
+                    IconButton(onClick = { }) {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = "Search"
+                        )
+                    }
+                    IconButton(onClick = { }) {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = "Profile"
                         )
                     }
                 }
-            }
+            )
         }
-
-        // Trending
-        if (trending.isNotEmpty()) {
+    ) { paddingValues ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            contentPadding = PaddingValues(bottom = 80.dp)
+        ) {
+            // Continue Watching Section
+            if (continueWatching.isNotEmpty()) {
+                item {
+                    SectionHeader(title = "Continue Watching")
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+                item {
+                    LazyRow(
+                        contentPadding = PaddingValues(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(continueWatching) { content ->
+                            ContentCard(
+                                content = content,
+                                onClick = { },
+                                onToggleWatchlist = { viewModel.toggleWatchlist(content.id) },
+                                isWatchlisted = false,
+                                showWatchProgress = true,
+                                watchProgress = 45
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
+            }
+            
+            // Trending Section
             item {
                 SectionHeader(title = "Trending Now")
+                Spacer(modifier = Modifier.height(8.dp))
             }
             item {
                 LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    contentPadding = PaddingValues(horizontal = 4.dp)
+                    contentPadding = PaddingValues(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    items(trending.take(10)) { content ->
+                    items(trending) { content ->
                         ContentCard(
                             content = content,
-                            onClick = { onContentClick(content.id) },
-                            onWatchlistToggle = { viewModel.toggleWatchlist(content.id) }
+                            onClick = { },
+                            onToggleWatchlist = { viewModel.toggleWatchlist(content.id) },
+                            isWatchlisted = false
                         )
                     }
                 }
+                Spacer(modifier = Modifier.height(24.dp))
             }
-        }
-
-        // Featured Collections
-        items(featured) { collection ->
-            SectionHeader(title = collection.title)
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                contentPadding = PaddingValues(horizontal = 4.dp)
-            ) {
-                items(collection.content) { content ->
-                    ContentCard(
-                        content = content,
-                        onClick = { onContentClick(content.id) },
-                        onWatchlistToggle = { viewModel.toggleWatchlist(content.id) }
-                    )
-                }
+            
+            // Featured Collections
+            items(featuredCollections) { collection ->
+                FeaturedCollectionSection(
+                    collection = collection,
+                    onContentClick = { },
+                    onToggleWatchlist = { contentId -> viewModel.toggleWatchlist(contentId) }
+                )
+                Spacer(modifier = Modifier.height(24.dp))
             }
-        }
-
-        item {
-            Spacer(modifier = Modifier.height(100.dp))
         }
     }
 }
 
 @Composable
-fun SectionHeader(
-    title: String
+fun SectionHeader(title: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            text = "See All",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.primary
+        )
+    }
+}
+
+@Composable
+fun FeaturedCollectionSection(
+    collection: FeaturedCollection,
+    onContentClick: (Content) -> Unit,
+    onToggleWatchlist: (String) -> Unit
 ) {
-    Text(
-        text = title,
-        style = MaterialTheme.typography.titleLarge,
-        fontWeight = FontWeight.SemiBold,
-        color = MaterialTheme.colorScheme.onSurface
-    )
+    Column(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(
+            text = collection.title,
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+        Text(
+            text = collection.description,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        LazyRow(
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(collection.content) { content ->
+                ContentCard(
+                    content = content,
+                    onClick = { onContentClick(content) },
+                    onToggleWatchlist = { onToggleWatchlist(content.id) },
+                    isWatchlisted = false
+                )
+            }
+        }
+    }
 }
