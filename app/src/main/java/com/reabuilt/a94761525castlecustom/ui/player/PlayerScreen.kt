@@ -48,7 +48,7 @@ import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.ui.PlayerView
-import androidx.navigation.compose.LocalNavController
+import androidx.navigation.compose.findNavController
 import com.reabuilt.a94761525castlecustom.data.model.VideoQuality
 import com.reabuilt.a94761525castlecustom.player.MediaButtonReceiver
 import com.reabuilt.a94761525castlecustom.viewmodel.rememberMainViewModel
@@ -61,7 +61,7 @@ fun PlayerScreen(
 ) {
     val viewModel = rememberMainViewModel()
     val context = LocalContext.current
-    val navController = LocalNavController.current
+    val navController = findNavController()
 
     val preferences by viewModel.preferences.collectAsState()
 

@@ -92,7 +92,7 @@ fun OnboardingScreen(onComplete: () -> Unit) {
             Column(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalAlignment = Alignment.CenterVertically
+                verticalArrangement = Arrangement.Center
             ) {
                 Icon(
                     imageVector = pageContent.icon,
