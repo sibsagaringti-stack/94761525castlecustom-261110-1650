@@ -10,13 +10,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,253 +25,172 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
-import coil3.compose.Crossfade
-import coil3.compose.dataUrl
-import coil3.compose.placeholder
-import coil3.compose.requestSuccess
-import coil3.request.ImageRequest
-import coil3.transform.CircleCropTransformation
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.reabuilt.a94761525castlecustom.R
 import com.reabuilt.a94761525castlecustom.data.model.Content
-import com.reabuilt.a94761525castlecustom.data.model.ContentType
 import com.reabuilt.a94761525castlecustom.data.model.VideoQuality
-import com.reabuilt.a94761525castlecustom.ui.theme.CastleTheme
-import kotlinx.coroutines.launch
+import com.reabuilt.a94761525castlecustom.ui.theme.CastleShapes
 
 @Composable
 fun ContentCard(
     content: Content,
-    size: ContentCardSize = ContentCardSize.MEDIUM,
     onClick: () -> Unit,
-    onLongClick: (() -> Unit)? = null,
-    showProgress: Boolean = false,
-    progress: Float = 0f,
+    onWatchlistToggle: () -> Unit,
     isInWatchlist: Boolean = false,
-    onWatchlistClick: (() -> Unit)? = null
+    modifier: Modifier = Modifier
 ) {
-    val cardWidth = when (size) {
-        ContentCardSize.SMALL -> 112.dp
-        ContentCardSize.MEDIUM -> 140.dp
-        ContentCardSize.LARGE -> 168.dp
-        ContentCardSize.XLARGE -> 200.dp
-    }
-    val cardHeight = cardWidth / 0.7f
+    var isWatchlisted by remember { mutableStateOf(isInWatchlist) }
 
     Card(
-        modifier = Modifier
-            .width(cardWidth)
-            .height(cardHeight)
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp)),
-        onClick = onClick,
-        onLongClick = onLongClick,
-        elevation = androidx.compose.material3.CardDefaults.cardElevation(
-            defaultElevation = 4.dp,
-            pressedElevation = 8.dp
-        ),
-        shape = RoundedCornerShape(12.dp),
-        colors = androidx.compose.material3.CardDefaults.cardColors(
-            containerColor = CastleTheme.colorScheme.surface,
-            contentColor = CastleTheme.colorScheme.onSurface
-        )
+        modifier = modifier
+            .width(160.dp)
+            .padding(4.dp),
+        shape = CastleShapes.medium,
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        onClick = onClick
     ) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(0.dp)
-        ) {
-            // Poster Image
+        Column {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .aspectRatio(0.7f)
-                    .clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp))
+                    .height(240.dp)
             ) {
                 AsyncImage(
-                    model = content.posterUrl,
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(content.posterUrl)
+                        .crossfade(true)
+                        .build(),
                     contentDescription = content.title,
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(240.dp),
                     contentScale = ContentScale.Crop,
-                    placeholder = placeholder {
-                        Box(
-                            modifier = Modifier.fillMaxSize().background(CastleTheme.colorScheme.surfaceVariant),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = getContentTypeIcon(content.contentType),
-                                contentDescription = null,
-                                tint = CastleTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-                                modifier = Modifier.size(32.dp)
-                            )
-                        }
-                    },
-                    crossfade = Crossfade(true),
-                    error = {
-                        Box(
-                            modifier = Modifier.fillMaxSize().background(CastleTheme.colorScheme.errorContainer),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = androidx.compose.material.icons.Icons.Default.BrokenImage,
-                                contentDescription = null,
-                                tint = CastleTheme.colorScheme.onErrorContainer,
-                                modifier = Modifier.size(32.dp)
-                            )
-                        }
-                    }
+                    placeholder = painterResource(R.drawable.placeholder_poster),
+                    error = painterResource(R.drawable.placeholder_poster)
                 )
 
-                // Quality Badge
+                // Quality badge
                 if (content.quality != VideoQuality.SD) {
                     Box(
                         modifier = Modifier
-                            .padding(8.dp)
                             .align(Alignment.TopEnd)
-                    ) {
-                        QualityBadge(quality = content.quality)
-                    }
-                }
-
-                // Content Type Badge (for Live TV)
-                if (content.isLive || content.contentType == ContentType.LIVE_TV) {
-                    Box(
-                        modifier = Modifier
                             .padding(8.dp)
-                            .align(Alignment.TopStart)
-                    ) {
-                        LiveBadge()
-                    }
-                }
-
-                // Watch Progress Overlay
-                if (showProgress && progress > 0) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.Black.copy(alpha = 0.6f))
-                            .clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)),
+                            .clip(RoundedCornerShape(4.dp))
+                            .padding(horizontal = 6.dp, vertical = 2.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            androidx.compose.material3.CircularProgressIndicator(
-                                progress = progress / 100f,
-                                modifier = Modifier.size(48.dp),
-                                strokeWidth = 4.dp,
-                                color = CastleTheme.colorScheme.primary,
-                                trackColor = CastleTheme.colorScheme.primaryContainer
-                            )
-                            Text(
-                                text = "${progress.toInt()}%",
-                                color = Color.White,
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Medium
-                            )
-                        }
+                        Text(
+                            text = content.quality.displayName,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(4.dp))
+                                .padding(horizontal = 4.dp, vertical = 1.dp)
+                        )
                     }
                 }
 
-                // Watchlist Button Overlay
-                if (onWatchlistClick != null) {
-                    Box(
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .align(Alignment.BottomEnd)
-                    ) {
-                        IconButton(
-                            onClick = onWatchlistClick,
-                            modifier = Modifier.background(CastleTheme.colorScheme.surface.copy(alpha = 0.9f), RoundedCornerShape(20.dp))
-                        ) {
-                            Icon(
-                                imageVector = if (isInWatchlist)
-                                    androidx.compose.material.icons.Icons.Default.Bookmark
-                                else
-                                    androidx.compose.material.icons.Icons.Default.BookmarkAddOutline,
-                                contentDescription = if (isInWatchlist) "Remove from watchlist" else "Add to watchlist",
-                                tint = if (isInWatchlist) CastleTheme.colorScheme.primary else Color.White,
-                                modifier = Modifier.size(24.dp).padding(8.dp)
-                            )
-                        }
-                    }
+                // Watchlist button
+                IconButton(
+                    onClick = {
+                        isWatchlisted = !isWatchlisted
+                        onWatchlistToggle()
+                    },
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(8.dp)
+                        .size(32.dp)
+                ) {
+                    Icon(
+                        painter = if (isWatchlisted) {
+                            painterResource(R.drawable.ic_bookmark_filled)
+                        } else {
+                            painterResource(R.drawable.ic_bookmark_outline)
+                        },
+                        contentDescription = if (isWatchlisted) "Remove from watchlist" else "Add to watchlist",
+                        tint = if (isWatchlisted) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                        },
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+
+                // Play button overlay
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(240.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_play_circle),
+                        contentDescription = "Play",
+                        tint = MaterialTheme.colorScheme.primary.copy(alpha = 0f),
+                        modifier = Modifier.size(64.dp)
+                    )
                 }
             }
 
-            // Content Info
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 8.dp, vertical = 8.dp),
+                    .padding(8.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(
                     text = content.title,
-                    maxLines = 2,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Medium,
+                    maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = CastleTheme.colorScheme.onSurface
+                    color = MaterialTheme.colorScheme.onSurface
                 )
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Rating
-                    if (content.rating > 0) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = androidx.compose.material.icons.Icons.Default.Star,
-                                contentDescription = null,
-                                tint = CastleTheme.colorScheme.secondary,
-                                modifier = Modifier.size(14.dp)
-                            )
-                            Text(
-                                text = String.format("%.1f", content.rating),
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Medium,
-                                color = CastleTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
-
-                    // Year
                     Text(
                         text = content.releaseYear.toString(),
-                        fontSize = 12.sp,
-                        color = CastleTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
 
-                    // Content Type
-                    Text(
-                        text = content.contentType.displayName,
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = CastleTheme.colorScheme.primary,
-                        modifier = Modifier
-                            .padding(horizontal = 6.dp, vertical = 2.dp)
-                            .background(CastleTheme.colorScheme.primaryContainer, RoundedCornerShape(4.dp))
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(2.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_star),
+                            contentDescription = "Rating",
+                            tint = MaterialTheme.colorScheme.secondary,
+                            modifier = Modifier.size(14.dp)
+                        )
+                        Text(
+                            text = String.format("%.1f", content.rating),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
 
-                // Genres (first 2)
                 if (content.genres.isNotEmpty()) {
                     Text(
-                        text = content.genres.take(2).joinToString(" • "),
+                        text = content.genres.joinToString(", ").take(20) + if (content.genres.joinToString(", ").length > 20) "..." else "",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        fontSize = 11.sp,
-                        color = CastleTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
             }
@@ -280,61 +199,112 @@ fun ContentCard(
 }
 
 @Composable
-fun QualityBadge(quality: VideoQuality) {
-    val (text, color) = when (quality) {
-        VideoQuality.SD -> "SD" to CastleTheme.colorScheme.onSurfaceVariant
-        VideoQuality.HD -> "HD" to CastleTheme.colorScheme.primary
-        VideoQuality.FULL_HD -> "Full HD" to CastleTheme.colorScheme.tertiary
-        VideoQuality.ULTRA_HD -> "4K" to CastleTheme.colorScheme.secondary
-    }
-
-    Text(
-        text = text,
-        fontSize = 10.sp,
-        fontWeight = FontWeight.Bold,
-        color = Color.White,
-        modifier = Modifier
-            .padding(horizontal = 6.dp, vertical = 2.dp)
-            .background(color, RoundedCornerShape(4.dp))
-    )
-}
-
-@Composable
-fun LiveBadge() {
-    Box(
-        modifier = Modifier
-            .padding(horizontal = 6.dp, vertical = 2.dp)
-            .background(CastleTheme.colorScheme.error, RoundedCornerShape(4.dp))
+fun ContentCardWide(
+    content: Content,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(100.dp)
+            .padding(vertical = 4.dp),
+        shape = CastleShapes.medium,
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        onClick = onClick
     ) {
         Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+            modifier = Modifier.fillMaxWidth()
         ) {
+            // Thumbnail
             Box(
                 modifier = Modifier
-                    .size(6.dp)
-                    .background(Color.White, RoundedCornerShape(3.dp))
-            )
-            Text(
-                text = "LIVE",
-                fontSize = 10.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
-            )
+                    .width(150.dp)
+                    .fillMaxHeight()
+            ) {
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(content.posterUrl)
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = content.title,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop,
+                    placeholder = painterResource(R.drawable.placeholder_poster),
+                    error = painterResource(R.drawable.placeholder_poster)
+                )
+            }
+
+            // Content info
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(12.dp),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Text(
+                        text = content.title,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = content.releaseYear.toString(),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+
+                        if (content.durationMinutes != null) {
+                            Text(
+                                text = "•",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+
+                            Text(
+                                text = "${content.durationMinutes} min",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(2.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_star),
+                                contentDescription = "Rating",
+                                tint = MaterialTheme.colorScheme.secondary,
+                                modifier = Modifier.size(14.dp)
+                            )
+                            Text(
+                                text = String.format("%.1f", content.rating),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
+
+                Text(
+                    text = content.description,
+                    style = MaterialTheme.typography.bodySmall,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
     }
-}
-
-enum class ContentCardSize {
-    SMALL, MEDIUM, LARGE, XLARGE
-}
-
-fun getContentTypeIcon(type: ContentType) = when (type) {
-    ContentType.MOVIE -> androidx.compose.material.icons.Icons.Default.Movie
-    ContentType.TV_SHOW -> androidx.compose.material.icons.Icons.Default.Tv
-    ContentType.WEB_SERIES -> androidx.compose.material.icons.Icons.Default.LiveTv
-    ContentType.ANIME -> androidx.compose.material.icons.Icons.Default.Animation
-    ContentType.LIVE_TV -> androidx.compose.material.icons.Icons.Default.LiveTv
-    ContentType.SHORT -> androidx.compose.material.icons.Icons.Default.Shorts
-    ContentType.DOCUMENTARY -> androidx.compose.material.icons.Icons.Default.VideoLibrary
 }
